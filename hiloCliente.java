@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.Map;
+import java.util.*;
 
 public class hiloCliente extends Thread {
     private final Socket clientSocket;
@@ -17,16 +17,19 @@ public class hiloCliente extends Thread {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             int puntaje = 0;
+            List<String> keysAsArray = new ArrayList<>(preguntasYRespuestas.keySet());
+            Collections.shuffle(keysAsArray); // Mezclar las preguntas
 
-            for (Map.Entry<String, String> entry : preguntasYRespuestas.entrySet()) {
-                out.println(entry.getKey()); // Enviar pregunta
+            for (int i = 0; i < 5; i++) { // Seleccionar y enviar 5 preguntas aleatorias
+                String pregunta = keysAsArray.get(i);
+                out.println(pregunta); // Enviar pregunta
                 String respuestaCliente = in.readLine(); // Leer respuesta
 
-                if (respuestaCliente.equalsIgnoreCase(entry.getValue())) {
-                    puntaje++;
-                    out.println("Correcto!");
+                if (respuestaCliente.equalsIgnoreCase(preguntasYRespuestas.get(pregunta))) {
+                    puntaje += 10; // 10 puntos por respuesta correcta
+                    out.println("Correcto! +10 puntos");
                 } else {
-                    out.println("Incorrecto! La respuesta correcta era: " + entry.getValue());
+                    out.println("Incorrecto! +0 puntos");
                 }
             }
 
